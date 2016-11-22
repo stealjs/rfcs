@@ -9,7 +9,7 @@ Minimize the amount of Loader code that runs in production to only what is neces
 
 I did a [performance audit](https://github.com/stealjs/stealjs/issues/20) on Steal to see what shortcomings we currently have. The goal is to achieve 3 second load times on 3G with a mid-range phone.
 
-Based on this audit there are the falling problems with *steal.production.js*:
+Based on this audit there are the following problems with *steal.production.js*:
 
 * The total budget of JavaScript is 100k. steal.production.js accounts for 21k, so a little over 1/5th of the total JavaScript budget. This doesn't include the npm plugin which is also packed into the main bundle.
 * steal.production.js takes 176ms to execute on a mid-range phone.
@@ -44,7 +44,7 @@ Since the goal of this RFC is a loader that is *as small as possible* it will on
 
 ## Module ids replace module names
 
-**transpile** will transpile to a different format, let's call it **_steal_** for now, and will omit something like:
+**transpile** will transpile to a different format, let's call it **_steal_** for now, and will emit something like:
 
 ```js
 steal([0, 7, 12, 34], function(exports, bar, baz, qux){
