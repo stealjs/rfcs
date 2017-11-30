@@ -38,9 +38,66 @@ Tree-shaking should be implemented as a new step in both the *multibuild* and *o
 
 The algorithm for implementing tree-shaking is a recursive process of walking through each Node in the graph. It goes, roughly:
 
-1. Starting at the `main`, find unused exports by looking at the `import` declarations and removing the difference.
-1. Remove those `export` declarations and any functions they call that is not used by other functions.
-1. Find `import` declarations that are not used in each module and remove them.
-1. Start by at step __1__.
+1. Traverse the graph and find all `import` declarations and `export` declarations.
+1. If any `export` declaration doesn't have a corresponding `import` declaration in another module, remove it from the AST.
+1. Within the module, remove any variables that are not referenced.
+1. Within the module, remove any `import` declarations that are not referenced.
+1. Start back at step (__2__).
 
 This algorithm should continue until there is no more code that can be removed.
+
+### Algorithm by example:
+
+Consider this program:
+
+__main.js__
+
+```js
+import {first} from './other';
+```
+
+__other.js__
+
+```js
+import {anotherOne, anotherTwo} from './and-another';
+
+function callAnotherTwo() {
+  return anotherTwo();
+}
+
+export function first() {
+  return anotherOne();
+};
+
+export function second() {
+  return callAnotherTwo();
+}
+```
+
+__and-another.js__
+
+```js
+export function anotherOne() {
+  return 'another';
+};
+
+export function anotherTwo() {
+  return 'two';
+};
+```
+
+The steps would be:
+
+1. Traverse the graph and collect the import and export declarations.
+1. Remove `export` declarations that do not have a corresponding `import`.
+  * The `second()` export in __other.js__ isn't imported else. This function can be remove.
+1. Remove unreferenced variables.
+  * `callAnotherTwo()` which was used within `second()` is no longer referenced. Remove it.
+1. Remove any `import` declarations that are not referenced.
+  * Since `callAnotherTwo()` was removed, now `anotherTwo` import declaration is no longer referenced. Remove it.
+1. Start back at step __2__.
+2. Remove `export` declarations that do not have a corresponding `import`.
+  * The `anotherTwo()` export in __and-another.js__ is no longer imported anywhere and can be removed.
+1. Remove unused references: there are none now.
+1. Remove unused imports: there are none now.
+1. Break from the algorithm as nothing more can be removed.
