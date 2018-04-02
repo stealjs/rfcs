@@ -39,7 +39,11 @@ Tree-shaking should be implemented as a new step in both the *multibuild* and *o
 The algorithm for implementing tree-shaking is a recursive process of walking through each Node in the graph. It goes, roughly:
 
 1. Traverse the graph and find all `import` declarations and `export` declarations.
-1. If any `export` declaration doesn't have a corresponding `import` declaration in another module, remove it from the AST.
+1. Remove `export` declarations from the AST *if*
+  1. there is no corresponding `import` declaration in another module.
+1. *Do not* remove export declarations if:
+  1. the module is dynamically imported but another module (`steal.import("foo")`).
+  1. is fully imported by another module `import "foo";`.
 1. Within the module, remove any variables that are not referenced.
 1. Within the module, remove any `import` declarations that are not referenced.
 1. Start back at step (__2__).
