@@ -1,3 +1,7 @@
+# DEPRECATED
+
+This repository is no longer used. It remains here as an archive of past activity.
+
 # Steal RFCs
 
 A place to discuss project-level changes to Steal and request new features that don't fit in any particular repository.
