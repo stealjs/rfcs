@@ -3,7 +3,7 @@
 
 # Summary
 
-One paragraph explaning the high-level feature.
+One paragraph explaining the high-level feature.
 
 # Motivation
 
